@@ -84,15 +84,11 @@ http://127.0.0.1:5000
 ---
 
 ### 💬 Fitur Utama
-🔍 Semantic Search menggunakan embedding vektor
-
-🤖 Jawaban berdasarkan kemiripan makna, bukan kata kunci
-
-🗂️ Multi-chat session (bisa banyak percakapan)
-
-💾 History chat tersimpan selama session aktif
-
-🌐 Antarmuka berbasis web
+1. 🔍 Semantic Search menggunakan embedding vektor
+2. 🤖 Jawaban berdasarkan kemiripan makna, bukan kata kunci
+3. 🗂️ Multi-chat session (bisa banyak percakapan)
+4. 💾 History chat tersimpan selama session aktif
+5. 🌐 Antarmuka berbasis web
 
 ### 🧪 Contoh Alur Kerja
 - Pengguna memasukkan pertanyaan
