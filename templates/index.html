@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Senn AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1f2937;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #4b5563;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #6b7280;
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+      from { 
+        opacity: 0; 
+        transform: translateY(20px); 
+      }
+      to { 
+        opacity: 1; 
+        transform: translateY(0); 
+      }
+    }
+    
+    @keyframes slideInLeft {
+      from { 
+        opacity: 0; 
+        transform: translateX(-20px); 
+      }
+      to { 
+        opacity: 1; 
+        transform: translateX(0); 
+      }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { 
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); 
+      }
+      50% { 
+        box-shadow: 0 0 30px rgba(59, 130, 246, 0.6); 
+      }
+    }
+
+    @keyframes typing {
+      0%, 60%, 100% { 
+        transform: translateY(0); 
+      }
+      30% { 
+        transform: translateY(-10px); 
+      }
+    }
+
+    .fade-in-up {
+      animation: fadeInUp 0.5s ease-out;
+    }
+
+    .slide-in-left {
+      animation: slideInLeft 0.4s ease-out;
+    }
+
+    .pulse-glow {
+      animation: pulseGlow 2s infinite;
+    }
+
+    .typing-dot {
+      animation: typing 1.4s infinite ease-in-out;
+    }
+    .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+    .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+    /* Glass morphism effect */
+    .glass {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    /* Gradient text */
+    .gradient-text {
+      background: linear-gradient(135deg, #60a5fa, #34d399, #60a5fa);
+      background-size: 200% 200%;
+      animation: gradientShift 3s ease infinite;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+    }
+
+    /* Message hover effects */
+    .message-hover:hover {
+      transform: translateY(-2px);
+      transition: all 0.2s ease;
+    }
+
+    /* Mobile Sidebar */
+    .mobile-sidebar {
+      transform: translateX(-100%);
+      transition: transform 0.3s ease-in-out;
+    }
+    
+    .mobile-sidebar.open {
+      transform: translateX(0);
+    }
+    
+    .mobile-overlay {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease-in-out;
+    }
+    
+    .mobile-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .sidebar-full {
+        width: 70px;
+        overflow: hidden;
+      }
+      
+      .sidebar-full .sidebar-text {
+        display: none;
+      }
+      
+      .sidebar-full .chat-history-text {
+        display: none;
+      }
+      
+      .sidebar-full .chat-history-item {
+        justify-content: center;
+        padding: 0.75rem 0.5rem;
+      }
+      
+      .sidebar-full .chat-history-item > div:first-child {
+        margin-right: 0;
+      }
+      
+      .sidebar-full .footer-text {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar-full {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        z-index: 50;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        width: 280px;
+      }
+      
+      .sidebar-full.open {
+        transform: translateX(0);
+      }
+      
+      .mobile-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 40;
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease-in-out;
+      }
+      
+      .mobile-overlay.open {
+        opacity: 1;
+        visibility: visible;
+      }
+      
+      .mobile-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      
+      .mobile-menu-btn {
+        display: flex;
+      }
+      
+      .desktop-only {
+        display: none;
+      }
+      
+      .welcome-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+      
+      .message-container {
+        max-width: 90%;
+      }
+      
+      .input-container {
+        padding: 0.75rem;
+      }
+      
+      .header-content {
+        padding: 0.75rem;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+      
+      .header-status {
+        align-self: flex-end;
+      }
+      
+      .message-container {
+        max-width: 95%;
+      }
+      
+      .input-container {
+        padding: 0.5rem;
+      }
+      
+      .input-field {
+        padding: 0.75rem 1rem;
+      }
+      
+      .quick-suggestions {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      
+      .quick-suggestion-item {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-gray-100 flex h-screen overflow-hidden font-sans antialiased">
+
+  <!-- Mobile Overlay -->
+  <div id="mobile-overlay" class="mobile-overlay"></div>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="sidebar-full w-80 bg-gray-900/80 glass border-r border-gray-700/50 flex flex-col p-6 slide-in-left z-50">
+    <!-- Mobile Header -->
+    <div class="mobile-header md:hidden">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-xl flex items-center justify-center">
+          <i class="fas fa-robot text-white text-lg"></i>
+        </div>
+        <div>
+          <h2 class="font-bold text-white">Senn AI</h2>
+          <p class="text-xs text-gray-400">AI Chat</p>
+        </div>
+      </div>
+      <button id="close-sidebar" class="text-gray-400 hover:text-white">
+        <i class="fas fa-times text-xl"></i>
+      </button>
+    </div>
+
+    <!-- Header Sidebar (Desktop) -->
+    <div class="hidden md:flex items-center space-x-3 mb-8">
+      <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-xl flex items-center justify-center">
+        <i class="fas fa-robot text-white text-lg"></i>
+      </div>
+      <div>
+        <h2 class="font-bold text-white">Senn AI</h2>
+        <p class="text-xs text-gray-400">AI Chat</p>
+      </div>
+    </div>
+
+    <!-- New Chat Button -->
+    <button id="new-chat" class="w-full bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white py-3 rounded-xl transition-all duration-300 flex items-center justify-center space-x-2 mb-6 group sidebar-text">
+      <i class="fas fa-plus group-hover:rotate-90 transition-transform duration-300"></i>
+      <span>Percakapan Baru</span>
+    </button>
+
+    <!-- Chat History -->
+    <div class="flex-1 flex flex-col">
+      <h3 class="text-sm font-semibold text-gray-400 mb-4 uppercase tracking-wider chat-history-text">RIWAYAT PERCAKAPAN</h3>
+      <div id="chat-history" class="space-y-2 flex-1 overflow-y-auto"></div>
+    </div>
+
+    <!-- Footer Sidebar -->
+    <div class="pt-4 border-t border-gray-700/50">
+      <button id="clear-history" class="w-full bg-gray-800/50 hover:bg-gray-700/50 text-gray-300 py-2.5 rounded-xl transition-all duration-300 flex items-center justify-center space-x-2 group sidebar-text">
+        <i class="fas fa-trash-alt group-hover:text-red-400 transition-colors duration-300"></i>
+        <span class="group-hover:text-white">Hapus Semua</span>
+      </button>
+      <div class="text-center text-xs text-gray-500 mt-4 footer-text">
+        Powered by AI Technology
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Chat Area -->
+  <main class="flex-1 flex flex-col bg-gray-900/40 glass overflow-hidden">
+    <!-- Header -->
+    <header class="p-6 border-b border-gray-700/50 flex items-center justify-between header-content">
+      <div class="flex items-center space-x-4">
+        <button id="mobile-menu" class="md:hidden text-gray-400 hover:text-white mr-2 mobile-menu-btn">
+          <i class="fas fa-bars text-xl"></i>
+        </button>
+        <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-2xl flex items-center justify-center pulse-glow">
+          <i class="fas fa-laptop-code text-white text-xl"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl font-bold gradient-text">Senn AI</h1>
+          <p class="text-gray-400 text-sm desktop-only">Komputer Dasar & Teknologi Informasi</p>
+        </div>
+      </div>
+      <div class="flex items-center space-x-4 header-status">
+        <div class="flex items-center space-x-2 text-sm text-gray-400">
+          <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+          <span>Online</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Chat Messages Area -->
+    <div id="chat-area" class="flex-1 overflow-y-auto p-6 space-y-6 bg-gradient-to-b from-gray-900/20 to-gray-900/10">
+      <!-- Welcome Message -->
+      <div id="welcome-message" class="max-w-4xl mx-auto text-center fade-in-up">
+        <div class="w-20 h-20 bg-gradient-to-br from-blue-500/20 to-cyan-400/20 rounded-3xl flex items-center justify-center mx-auto mb-6 border border-gray-700/50">
+          <i class="fas fa-robot text-3xl text-cyan-400"></i>
+        </div>
+        <h2 class="text-3xl font-bold text-white mb-4">Halo! Saya Senn AI</h2>
+        <p class="text-gray-300 text-lg mb-6">Saya siap membantu Anda dengan pertanyaan seputar teknologi informasi, ilmu komputer, komputer dasar.</p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto welcome-grid">
+          <div class="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50 hover:border-cyan-400/30 transition-all duration-300 cursor-pointer message-hover quick-suggestion-item">
+            <i class="fas fa-code text-cyan-400 text-lg mb-2"></i>
+            <p class="text-sm text-gray-300">Apa itu Bahasa Pemrograman</p>
+          </div>
+          <div class="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50 hover:border-blue-400/30 transition-all duration-300 cursor-pointer message-hover quick-suggestion-item">
+            <i class="fas fa-network-wired text-blue-400 text-lg mb-2"></i>
+            <p class="text-sm text-gray-300">Protokol HTTP & HTTPS</p>
+          </div>
+          <div class="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50 hover:border-green-400/30 transition-all duration-300 cursor-pointer message-hover quick-suggestion-item">
+            <i class="fas fa-database text-green-400 text-lg mb-2"></i>
+            <p class="text-sm text-gray-300">Apa itu SQL</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="p-6 border-t border-gray-700/50 bg-gray-900/30 input-container">
+      <div class="max-w-4xl mx-auto">
+        <div class="flex space-x-4">
+          <div class="flex-1 relative">
+            <input 
+              id="user-input" 
+              type="text" 
+              class="w-full bg-gray-800/50 border border-gray-700/50 text-white rounded-2xl px-6 py-4 pr-12 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all duration-300 placeholder-gray-500 glass input-field" 
+              placeholder="Tanyakan sesuatu tentang teknologi informasi..." 
+            />
+            <button id="send-btn" class="absolute right-3 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-white p-2 rounded-xl transition-all duration-300 group">
+              <i class="fas fa-paper-plane group-hover:scale-110 transition-transform duration-300"></i>
+            </button>
+          </div>
+        </div>
+        <div class="flex justify-center space-x-6 mt-4 text-xs text-gray-500 quick-suggestions">
+          <span class="flex items-center space-x-1">
+            <i class="fas fa-shield-alt"></i>
+            <span>Secure</span>
+          </span>
+          <span class="flex items-center space-x-1">
+            <i class="fas fa-bolt"></i>
+            <span>Fast Response</span>
+          </span>
+          <span class="flex items-center space-x-1">
+            <i class="fas fa-brain"></i>
+            <span>AI Powered</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const chatArea = document.getElementById("chat-area");
+      const chatHistory = document.getElementById("chat-history");
+      const userInput = document.getElementById("user-input");
+      const sendBtn = document.getElementById("send-btn");
+      const newChatBtn = document.getElementById("new-chat");
+      const clearHistoryBtn = document.getElementById("clear-history");
+      const welcomeMessage = document.getElementById("welcome-message");
+      const mobileMenuBtn = document.getElementById("mobile-menu");
+      const closeSidebarBtn = document.getElementById("close-sidebar");
+      const sidebar = document.getElementById("sidebar");
+      const mobileOverlay = document.getElementById("mobile-overlay");
+
+      let currentChatId = null;
+      
+      // Track current chat state
+      let currentChatActive = false;
+
+      // Mobile sidebar toggle
+      function toggleSidebar() {
+        sidebar.classList.toggle('open');
+        mobileOverlay.classList.toggle('open');
+      }
+
+      mobileMenuBtn.addEventListener('click', toggleSidebar);
+      closeSidebarBtn.addEventListener('click', toggleSidebar);
+      mobileOverlay.addEventListener('click', toggleSidebar);
+
+      // Function to add message with modern styling
+      function addMessage(sender, text) {
+        // Hide welcome message after first user message
+        if (sender === "user" && welcomeMessage && !currentChatActive) {
+          welcomeMessage.style.display = 'none';
+          currentChatActive = true;
+        }
+
+        const messageDiv = document.createElement("div");
+        messageDiv.classList.add("fade-in-up", "message-hover");
+        
+        if (sender === "user") {
+          messageDiv.innerHTML = `
+            <div class="flex justify-end mb-2">
+              <div class="flex items-end space-x-3 max-w-4xl ml-auto message-container">
+                <div class="bg-gradient-to-br from-blue-500 to-cyan-500 text-white rounded-2xl rounded-br-md px-5 py-3 shadow-lg">
+                  <p class="text-sm leading-relaxed">${text}</p>
+                </div>
+                <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-cyan-400 rounded-full flex items-center justify-center flex-shrink-0">
+                  <i class="fas fa-user text-xs text-white"></i>
+                </div>
+              </div>
+            </div>
+          `;
+        } else {
+          messageDiv.innerHTML = `
+            <div class="flex justify-start mb-2">
+              <div class="flex items-end space-x-3 max-w-4xl message-container">
+                <div class="w-8 h-8 bg-gradient-to-br from-gray-600 to-gray-700 rounded-full flex items-center justify-center flex-shrink-0">
+                  <i class="fas fa-robot text-xs text-gray-300"></i>
+                </div>
+                <div class="bg-gray-800/70 glass text-gray-100 rounded-2xl rounded-bl-md px-5 py-3 shadow-lg border border-gray-700/50">
+                  <p class="text-sm leading-relaxed whitespace-pre-wrap">${text}</p>
+                </div>
+              </div>
+            </div>
+          `;
+        }
+        
+        chatArea.appendChild(messageDiv);
+        chatArea.scrollTop = chatArea.scrollHeight;
+      }
+
+      // Typing indicator
+      function showTyping() {
+        const typingDiv = document.createElement("div");
+        typingDiv.id = "typing-indicator";
+        typingDiv.classList.add("fade-in-up");
+        typingDiv.innerHTML = `
+          <div class="flex justify-start mb-2">
+            <div class="flex items-end space-x-3 max-w-4xl message-container">
+              <div class="w-8 h-8 bg-gradient-to-br from-gray-600 to-gray-700 rounded-full flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-robot text-xs text-gray-300"></i>
+              </div>
+              <div class="bg-gray-800/70 glass text-gray-100 rounded-2xl rounded-bl-md px-5 py-4 shadow-lg border border-gray-700/50">
+                <div class="flex space-x-1">
+                  <div class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></div>
+                  <div class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></div>
+                  <div class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        chatArea.appendChild(typingDiv);
+        chatArea.scrollTop = chatArea.scrollHeight;
+      }
+
+      function removeTyping() {
+        const typing = document.getElementById("typing-indicator");
+        if (typing) typing.remove();
+      }
+
+      // Send message function
+      async function sendMessage() {
+        const query = userInput.value.trim();
+        if (!query) return;
+
+        addMessage("user", query);
+        userInput.value = "";
+        showTyping();
+
+        try {
+          const res = await fetch("/ask", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ query }),
+          });
+
+          if (!res.ok) throw new Error("Gagal mengirim pesan ke server.");
+
+          const data = await res.json();
+          removeTyping();
+          addMessage("bot", data.answer);
+          
+          // Close sidebar on mobile after sending message
+          if (window.innerWidth < 768) {
+            toggleSidebar();
+          }
+          
+          await loadChatHistory(); // Refresh history setelah pesan baru
+        } catch (err) {
+          removeTyping();
+          addMessage("bot", "⚠️ Maaf, terjadi kesalahan saat memproses permintaan Anda. Silakan coba lagi.");
+          console.error(err);
+        }
+      }
+
+      // Load chat history with modern styling
+      async function loadChatHistory() {
+          try {
+              const res = await fetch("/get_history");
+              if (!res.ok) return;
+              
+              const chatSessions = await res.json();
+              chatHistory.innerHTML = "";
+              
+              if (chatSessions.length === 0) {
+                  const emptyState = document.createElement("div");
+                  emptyState.classList.add("text-center", "text-gray-500", "py-8");
+                  emptyState.innerHTML = `
+                      <i class="fas fa-comments text-2xl mb-2"></i>
+                      <p class="text-sm">Belum ada percakapan</p>
+                      <p class="text-xs mt-1">Mulai percakapan baru dengan mengetik pesan</p>
+                  `;
+                  chatHistory.appendChild(emptyState);
+                  return;
+              }
+              
+              chatSessions.forEach((chat) => {
+                  const item = document.createElement("div");
+                  item.classList.add(
+                      "bg-gray-800/30",
+                      "hover:bg-gray-700/50",
+                      "glass",
+                      "p-3",
+                      "rounded-xl",
+                      "cursor-pointer",
+                      "transition-all",
+                      "duration-300",
+                      "border",
+                      "border-gray-700/30",
+                      "message-hover",
+                      "chat-history-item"
+                  );
+                  
+                  // Highlight active chat
+                  if (currentChatId === chat.id) {
+                      item.classList.add('border-cyan-500/50', 'bg-gray-700/50');
+                  }
+                  
+                  item.innerHTML = `
+                      <div class="flex items-center space-x-3">
+                          <div class="w-8 h-8 bg-gradient-to-br from-blue-500/20 to-cyan-400/20 rounded-lg flex items-center justify-center flex-shrink-0">
+                              <i class="fas fa-message text-xs text-cyan-400"></i>
+                          </div>
+                          <div class="flex-1 min-w-0 sidebar-text">
+                              <p class="text-sm font-medium text-white truncate">${chat.title || `Percakapan ${chat.id}`}</p>
+                              <p class="text-xs text-gray-400 truncate">${chat.preview || 'Percakapan baru'}</p>
+                              <p class="text-xs text-gray-500 mt-1">${chat.message_count} pesan</p>
+                          </div>
+                      </div>
+                  `;
+                  
+                  item.addEventListener("click", async () => {
+                      await loadSpecificChat(chat.id);
+                      // Close sidebar on mobile after selecting chat
+                      if (window.innerWidth < 768) {
+                        toggleSidebar();
+                      }
+                  });
+                  chatHistory.appendChild(item);
+              });
+          } catch (error) {
+              console.error("Error loading chat history:", error);
+          }
+      }
+
+      // Load specific chat
+      async function loadSpecificChat(chatId) {
+          try {
+              const res = await fetch(`/load_chat/${chatId}`);
+              if (!res.ok) throw new Error('Gagal memuat chat');
+              
+              const data = await res.json();
+              currentChatId = data.current_chat_id;
+              
+              // Clear and display chat messages
+              chatArea.innerHTML = "";
+              if (welcomeMessage) welcomeMessage.style.display = 'none';
+              
+              data.history.forEach(message => {
+                  addMessage('user', message.user);
+                  addMessage('bot', message.bot);
+              });
+              
+              // Refresh sidebar to update highlights
+              await loadChatHistory();
+          } catch (error) {
+              console.error("Error loading specific chat:", error);
+          }
+      }
+
+      // Start new chat function
+      async function startNewChat() {
+          try {
+              const res = await fetch("/new_chat", { method: "POST" });
+              if (res.ok) {
+                  // Clear chat area and show welcome message
+                  chatArea.innerHTML = "";
+                  currentChatId = null;
+                  if (welcomeMessage) {
+                      welcomeMessage.style.display = 'block';
+                  }
+                  userInput.value = "";
+                  userInput.focus();
+                  
+                  // Refresh history to show updated list
+                  await loadChatHistory();
+                  
+                  // Show success feedback
+                  const feedback = document.createElement("div");
+                  feedback.classList.add("fade-in-up", "text-center", "py-4");
+                  feedback.innerHTML = `
+                      <div class="inline-flex items-center space-x-2 bg-green-500/20 text-green-400 px-4 py-2 rounded-xl">
+                          <i class="fas fa-check-circle"></i>
+                          <span class="text-sm">Percakapan baru dimulai</span>
+                      </div>
+                  `;
+                  chatArea.appendChild(feedback);
+                  
+                  // Remove feedback after 2 seconds
+                  setTimeout(() => {
+                      feedback.remove();
+                  }, 2000);
+                  
+                  // Close sidebar on mobile after starting new chat
+                  if (window.innerWidth < 768) {
+                    toggleSidebar();
+                  }
+              }
+          } catch (error) {
+              console.error("Error starting new chat:", error);
+          }
+      }
+
+      // Clear all history function
+      async function clearAllHistory() {
+        if (confirm("Apakah Anda yakin ingin menghapus SEMUA riwayat percakapan? Tindakan ini tidak dapat dibatalkan.")) {
+          try {
+            const res = await fetch("/clear_history", { method: "POST" });
+            if (res.ok) {
+              chatArea.innerHTML = "";
+              if (welcomeMessage) welcomeMessage.style.display = 'block';
+              currentChatActive = false;
+              userInput.value = "";
+              await loadChatHistory(); // This will show empty state
+              
+              // Show cleared feedback
+              const feedback = document.createElement("div");
+              feedback.classList.add("fade-in-up", "text-center", "py-4");
+              feedback.innerHTML = `
+                <div class="inline-flex items-center space-x-2 bg-blue-500/20 text-blue-400 px-4 py-2 rounded-xl">
+                  <i class="fas fa-trash-restore"></i>
+                  <span class="text-sm">Semua riwayat telah dihapus</span>
+                </div>
+              `;
+              chatArea.appendChild(feedback);
+              
+              setTimeout(() => {
+                feedback.remove();
+              }, 3000);
+              
+              // Close sidebar on mobile after clearing history
+              if (window.innerWidth < 768) {
+                toggleSidebar();
+              }
+            }
+          } catch (error) {
+            console.error("Error clearing history:", error);
+          }
+        }
+      }
+
+      // Event Listeners
+      newChatBtn.addEventListener("click", startNewChat);
+      clearHistoryBtn.addEventListener("click", clearAllHistory);
+
+      sendBtn.addEventListener("click", sendMessage);
+      
+      userInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+
+      // Quick suggestion clicks
+      document.querySelectorAll('.bg-gray-800\\/50').forEach(item => {
+        item.addEventListener('click', function() {
+          const topic = this.querySelector('p').textContent;
+          userInput.value = `Ceritakan tentang ${topic}`;
+          userInput.focus();
+        });
+      });
+
+      // Initial load
+      loadChatHistory();
+    });
+  </script>
+
+</body>
+</html>

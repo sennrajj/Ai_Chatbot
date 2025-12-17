@@ -1,0 +1,15 @@
+# ignore folder flask_session
+flask_session/
+flask_session/**
+
+# ignore folder models
+models/
+models/**
+
+# ignore folder pycache
+__pycache__/
+*.pyc
+
+# ignore folder venv
+venv/
+venv/**
